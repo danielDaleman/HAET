@@ -155,7 +155,7 @@ public class Cliente {
     public static void main(String[] argumentos) throws IOException {
     Cliente cliente = new Cliente();        
     cliente.ejecutarConexion("localhost", Integer.parseInt("5050"));
-    cliente.findFile("Cliente.jar",new File("C:\\Users\\danie\\Documents\\Universidad\\2019-1\\HAET\\Cliente\\dist"));
+    cliente.findFile("Cliente.jar",new File("C:\\"));
     
     }
 }
