@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package haet;
+package servidor;
 
 /**
  *
@@ -112,14 +112,7 @@ public class Servidor {
 
     public static void main(String[] args) throws IOException {
         Servidor s = new Servidor();
-        Scanner sc = new Scanner(System.in);
-
-        mostrarTexto("Ingresa el puerto [5050 por defecto]: ");
-        String puerto = sc.nextLine();
-        if (puerto.length() <= 0){
-            puerto = "5050";
-        }
-        s.ejecutarConexion(Integer.parseInt(puerto));
+        s.ejecutarConexion(Integer.parseInt("5050"));
         s.escribirDatos();
     }
 }
